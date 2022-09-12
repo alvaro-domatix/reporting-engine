@@ -99,10 +99,11 @@ class Report(models.Model):
         num_copies = 0
 
         if docids:
-            pickings = self.env[self.model].browse(docids)
-            if pickings:
-                picking = pickings[0]
-                partner = picking.partner_id
+            object_ids = self.env[self.model].browse(docids)
+            if object_ids:
+                object_id = object_ids[0]
+                #Se asume que se ha puesto marca de agua en informes que tengan "partner_id"
+                partner = object_id.partner_id
                 num_copies = partner.num_copies
         if num_copies:
             for copy in range(num_copies + 1):
