@@ -96,13 +96,32 @@ class Report(models.Model):
         if pdf_watermark.numPages > 1:
             logger.debug('Your watermark pdf contains more than one page, '
                          'all but the first one will be ignored')
+        num_copies = 0
 
-        for page in PdfFileReader(BytesIO(result)).pages:
-            watermark_page = pdf.addBlankPage(
-                page.mediaBox.getWidth(), page.mediaBox.getHeight()
-            )
-            watermark_page.mergePage(pdf_watermark.getPage(0))
-            watermark_page.mergePage(page)
+        if docids:
+            pickings = self.env[self.model].browse(docids)
+            if pickings:
+                picking = pickings[0]
+                partner = picking.partner_id
+                num_copies = partner.num_copies
+        if num_copies:
+            for copy in range(num_copies + 1):
+                for page in PdfFileReader(BytesIO(result)).pages:
+                    watermark_page = pdf.addBlankPage(
+                        page.mediaBox.getWidth(), page.mediaBox.getHeight()
+                    )
+                    if copy == 0:
+                        watermark_page.mergePage(page)
+                    else:
+                        watermark_page.mergePage(page)
+                        watermark_page.mergePage(pdf_watermark.getPage(0))
+        else:
+            for page in PdfFileReader(BytesIO(result)).pages:
+                watermark_page = pdf.addBlankPage(
+                    page.mediaBox.getWidth(), page.mediaBox.getHeight()
+                )
+                watermark_page.mergePage(page)
+                watermark_page.mergePage(pdf_watermark.getPage(0))
 
         pdf_content = BytesIO()
         pdf.write(pdf_content)

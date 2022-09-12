@@ -16,6 +16,7 @@
         "demo/report.xml",
         "views/ir_actions_report_xml.xml",
         "views/layout_templates.xml",
+        "views/res_partner_views.xml",
     ],
     "demo": [
         "demo/report.xml"
