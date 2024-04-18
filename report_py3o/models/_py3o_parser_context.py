@@ -21,6 +21,8 @@ except ImportError:
 
 def format_multiline_value(value):
     if value:
+        if value[-1] == '\n':
+            value = value[:-1]
         return Markup(html.escape(value).replace('\n', '<text:line-break/>').
                       replace('\t', '<text:s/><text:s/><text:s/><text:s/>'))
     return ""
